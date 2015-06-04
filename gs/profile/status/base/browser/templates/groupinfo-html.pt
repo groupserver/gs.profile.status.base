@@ -159,6 +159,8 @@
   </tr><!--gs-profile-status-groups-group-info-digest-->
   <tr class="gs-profile-status-groups-group-info-canpost">
     <td>
+      You can post to GroupServer development using the web or
+      email:<br/>
       <a tal:attributes="href string:${view/groupInfo/url}/messages/newTopic.html"
          class="btn" href="#">&#10010; Start a new topic</a>
       or
