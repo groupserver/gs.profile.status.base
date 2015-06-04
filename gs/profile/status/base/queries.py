@@ -120,6 +120,7 @@ class PostingStatsQuery(object):
         s.append_whereclause(self.year(tt.c.last_post_date) == year)
         s.append_whereclause(tt.c.group_id == groupId)
         s.append_whereclause(tt.c.site_id == siteId)
+        s.order_by(sa.desc(tt.c.num_posts))
 
         session = getSession()
         r = session.execute(s)

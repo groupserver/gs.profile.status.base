@@ -269,8 +269,8 @@ current user is never in the list'''
     @Lazy
     def topics(self):
         pm = self.previousMonth
-        retval = self.statsQuery.topics_in_month(
-            pm.month, pm.year, self.groupInfo.id, self.siteInfo.id)
+        r = self.statsQuery.topics_in_month(pm.month, pm.year, self.groupInfo.id, self.siteInfo.id)
+        retval = r[:7]
         shuffle(retval)
         return retval
 
