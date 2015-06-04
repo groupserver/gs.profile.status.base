@@ -117,9 +117,8 @@
           <td>
             <span tal:condition="python:view.nTopics==1">Only
             <b>one topic was discussed:</b></span>
-            <span tal:condition="python:view.nTopics!=1">There were
-            <b><span tal:content="view/nTopics">n</span> topics
-            discussed:</b></span>
+            <span tal:condition="python:view.nTopics!=1"><b>Top
+              topics:</b></span>
             <span tal:content="structure view/specificTopics">the topics</span>
           </td>
         </tr><!--gs-profile-status-groups-group-info-posting-topics-->
