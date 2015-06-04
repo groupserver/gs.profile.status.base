@@ -310,7 +310,7 @@ current user is never in the list'''
         pm = self.previousMonth
         r = self.statsQuery.keywords_in_month(
             pm.month, pm.year, self.groupInfo.id, self.siteInfo.id)
-        retval = self.case_reduce(r[:24])
+        retval = self.case_reduce(r[:23])
         shuffle(retval)
         return retval
 

@@ -154,6 +154,7 @@ class PostingStatsQuery(object):
         s.append_whereclause(tt.c.group_id == groupId)
         s.append_whereclause(tt.c.site_id == siteId)
         s.append_whereclause(tt.c.topic_id == tkt.c.topic_id)
+        s.order_by(sa.desc(tt.c.num_posts))
 
         session = getSession()
         r = session.execute(s)
