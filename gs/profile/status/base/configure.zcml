@@ -223,13 +223,6 @@
     weight="100"
     permission="zope2.Public" />
 
-  <!--Email command-->
-  <adapter
-    name="status"
-    for="gs.group.type.support.interfaces.IGSSupportGroup"
-    provides="gs.group.list.command.interfaces.IEmailCommand"
-    factory=".command.StatusCommand" />
-
   <!-- The utility for the audit trail -->
   <utility
     name="gs.profile.status.base"

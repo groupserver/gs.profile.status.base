@@ -27,7 +27,6 @@ with codecs.open(os.path.join("docs", "HISTORY.rst"),
     long_description += '\n' + f.read()
 
 requires = [
-    'setuptools',
     'pytz',
     'sqlalchemy',
     'zope.app.pagetemplate',
@@ -50,7 +49,6 @@ requires = [
     'gs.core',
     'gs.database',
     'gs.group.base',  # For the marker
-    'gs.group.list.command',
     'gs.group.member.base',
     'gs.group.member.canpost',
     'gs.group.member.email.base',

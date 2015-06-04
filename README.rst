@@ -7,7 +7,7 @@ The profile status notification
 
 :Author: `Michael JasonSmith`_
 :Contact: Michael JasonSmith <mpj17@onlinegroups.net>
-:Date: 2015-04-28
+:Date: 2015-06-04
 :Organization: `GroupServer.org`_
 :Copyright: This document is licensed under a
   `Creative Commons Attribution-Share Alike 4.0 International License`_
@@ -18,8 +18,7 @@ The profile status notification
 
 The *Profile status* notification_ is sent out once a month to
 remind people that they are a member of some GroupServer
-groups. The notification is sent using the sender_, while the
-`email command`_ stops the summary notification from going out.
+groups. The notification is sent using the sender_.
 
 Notification
 ============
@@ -229,13 +228,6 @@ object [#json]_.
 The subject line of the notification is (in English) *What is
 happening in your groups*.
 
-Email command
-=============
-
-The email command [#command]_ ``Summary off`` is registered for
-the support-groups. It adds the user-identifier for the sender to
-the ``summary_skip`` table.
-
 Resources
 =========
 
@@ -266,7 +258,5 @@ Resources
             <https://github.com/groupserver/gs.content.form.api.json>
 
 .. [#token] See <https://github.com/groupserver/gs.auth.token>
-
-.. [#command] See <https://github.com/groupserver/gs.group.list.command>
 
 ..  LocalWords:  nz GSProfile TODO redirector LocalWords viewlets
