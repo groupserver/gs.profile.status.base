@@ -26,6 +26,7 @@ from gs.group.member.base import user_admin_of_group
 from gs.group.privacy.interfaces import IGSGroupVisibility
 from gs.group.stats import GroupPostingStats
 from gs.profile.base import ProfileViewlet, ProfileContentProvider
+from gs.profile.image.base import get_file as get_image_file
 from gs.site.member.sitemembershipvocabulary import SiteMembership
 from gs.group.member.base import get_group_userids
 from gs.group.member.canpost.interfaces import IGSPostingUser
@@ -223,19 +224,38 @@ class GroupInfo(ProfileContentProvider):
     def get_max_people(self, ids):
         '''Get :var:`maxAuthors` from the list of ids. The ID of the
 current user is never in the list'''
-        # Get n+1 authors, because we are going to throw one away.
-        maxIds = ids[:(self.maxAuthors+1)]
         try:
             # Throw the author away.
-            maxIds.remove(self.userInfo.id)
+            ids.remove(self.userInfo.id)
         except ValueError:
             # User not in the list. No worries.
-            maxIds = maxIds[:self.maxAuthors]
-        r = [createObject('groupserver.UserFromId',
-                          self.groupInfo.groupObj, u) for u in maxIds]
-        retval = [u for u in r if not(u.anonymous)]
+            pass
+        retval = self.prefer_photos(ids)[:self.maxAuthors]
         assert type(retval) == list
         assert len(retval) <= self.maxAuthors
+        return retval
+
+    def prefer_photos(self, userIds):
+        '''Get a list of userInfo object, preferring people with photos
+
+:param list userIds: A list of user identifiers
+:returns: A list of userInfo objects, with the people with photos placed first
+:rtype: list'''
+        r = [createObject('groupserver.UserFromId',
+                          self.groupInfo.groupObj, u) for u in userIds]
+        photos = []
+        noPhotos = []
+        for u in r:
+            try:
+                if u.anonymous:
+                    continue
+                elif (get_image_file(self.context, u) is not None):
+                    photos.append(u)
+                else:
+                    noPhotos.append(u)
+            except IOError:
+                noPhotos.append(u)
+        retval = (photos + noPhotos)
         return retval
 
     @Lazy
