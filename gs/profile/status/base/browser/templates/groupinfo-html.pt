@@ -11,7 +11,7 @@
               title="You are an administrator of this group"
               tal:condition="view/isAdmin">Administrator</span>
         <a tal:attributes="href view/unsubscribeLink"
-           class="btn btn-small" href="#">Leave</a>
+           class="muted small" href="#">Leave?</a>
       </h3>
     </td><!--gs-profile-status-groups-group-info-h-->
   </tr>
