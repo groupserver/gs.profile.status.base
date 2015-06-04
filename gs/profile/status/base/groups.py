@@ -295,11 +295,22 @@ current user is never in the list'''
         retval = comma_comma_and(topicLinks)
         return retval
 
+    @staticmethod
+    def case_reduce(l):
+        u = []
+        retval = []
+        for word in l:
+            if word.upper() not in u:
+                u.append(word.upper())
+                retval.append(word)
+        return retval
+
     @Lazy
     def keywords(self):
         pm = self.previousMonth
-        retval = self.statsQuery.keywords_in_month(
+        r = self.statsQuery.keywords_in_month(
             pm.month, pm.year, self.groupInfo.id, self.siteInfo.id)
+        retval = self.case_reduce(r[:24])
         shuffle(retval)
         return retval
 
