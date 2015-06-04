@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2.0.0 (2015-06-04)
+------------------
+
+* Moved the ``Status off`` notification to its own product:
+  `gs.profile.status.change`_
+
+.. _gs.profile.status.change:
+   https://github.com/groupserver/gs.profile.status.change
+
 1.0.1 (2015-06-02)
 ------------------
 
