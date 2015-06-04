@@ -44,12 +44,12 @@
       </tal:block>
       <br/>
       <br/>
-      No one made any posts to
+      <span class="muted">No one made any posts to
       <span tal:content="view/groupInfo/name">this group</span>
-      in
-      <span tal:attributes="title view/previousMonth/isoformat"
-            tal:content="python:view.previousMonth.strftime('%B')"
-            class="date">this month</span>.
+        in
+        <span tal:attributes="title view/previousMonth/isoformat"
+              tal:content="python:view.previousMonth.strftime('%B')"
+              class="date">this month</span>.</span>
     </td>
   </tr><!--gs-profile-status-groups-group-info-general-stats-none-->
   <tr tal:condition="view/nPosts"
@@ -158,8 +158,8 @@
   </tr><!--gs-profile-status-groups-group-info-digest-->
   <tr class="gs-profile-status-groups-group-info-canpost">
     <td>
-      You can post to GroupServer development using the web or
-      email:<br/>
+      Post to GroupServer development using the web or
+      email:<br/><br/>
       <a tal:attributes="href string:${view/groupInfo/url}/messages/newTopic.html"
          class="btn" href="#">&#10010; Start a new topic</a>
       or
