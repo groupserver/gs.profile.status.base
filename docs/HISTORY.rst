@@ -1,11 +1,14 @@
 Changelog
 =========
 
-2.0.0 (2015-06-04)
+1.1.0 (2015-06-04)
 ------------------
 
 * Reduced the number of topics, and keywords that are shown
-* Showing profile photos by preference
+* Showing people with profile photos by preference
+* Added a ``Digest off`` link for quiet groups
+* Split the keywords into important, normal, and minor to provide
+  texture
 * Moved the ``Status off`` notification to its own product:
   `gs.profile.status.change`_
 
