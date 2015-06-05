@@ -132,11 +132,8 @@
             </h4>
           </th>
           <td>
-            <a href="#"
-               tal:attributes="href view/groupInfo/url">
-              <b>Keywords:</b>
-              <span tal:content="view/specificKeywords">keywords</span>
-            </a>
+            <b>Keywords:</b>
+            <span tal:content="structure view/specificKeywords">keywords</span>
           </td>
         </tr><!--gs-profile-status-groups-group-info-posting-posts-->
       </table>
@@ -153,6 +150,19 @@
         on in
         <span tal:content="view/groupInfo/name">this group</span>,
         instead of an email each time someone posts.
+      </p>
+    </td>
+  </tr><!--gs-profile-status-groups-group-info-digest-->
+  <tr tal:condition="view/switchFromDigest"
+      class="gs-profile-status-groups-group-info-digest-off">
+    <td>
+      <p>
+        You currently receive a daily digest from
+        <span tal:content="view/groupInfo/name">this group</span>,
+        but it is a quiet group.
+        <a tal:attributes="href view/digestOffLink"
+           href="#">Switch off the digest</a>
+        to receive an email whenever someone posts.
       </p>
     </td>
   </tr><!--gs-profile-status-groups-group-info-digest-->

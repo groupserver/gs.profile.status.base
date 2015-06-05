@@ -65,6 +65,7 @@
 .gs-profile-status-groups-group-info-general-stats-none td,
 .gs-profile-status-groups-group-info-posting th,
 .gs-profile-status-groups-group-info-digest td,
+.gs-profile-status-groups-group-info-digest-off td,
 .gs-profile-status-groups-group-info-canpost td {
     padding: 10px 0 0 20px;
 }

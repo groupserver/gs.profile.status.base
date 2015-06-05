@@ -12,7 +12,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ############################################################################
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import (absolute_import, print_function, unicode_literals,
+                        division)
 from datetime import date
 from functools import reduce
 from operator import concat, attrgetter
@@ -104,8 +105,20 @@ class SiteInfo(ProfileContentProvider):
 class GroupInfo(ProfileContentProvider):
     'Ths group-information content provider'
 
+    #: How many posts are considered *many*, and people should do
+    #: something about it, like switch to the digest.
     manyPosts = 31
+
+    #: How many posts are considered *few*, so people may need to
+    #: start interacting more closely with the group by coming off
+    #: the digest.
+    fewPosts = 4
+
+    #: The maximum number of authors to show in the *facepile*.
     maxAuthors = 6
+
+    #: The maximum length (in characters) for the topics and keywords,
+    #: ignoring the seperating commas.
     maxTextLen = 127
 
     def __init__(self, profile, request, view):
@@ -199,6 +212,15 @@ class GroupInfo(ProfileContentProvider):
         geu = GroupEmailUser(self.userInfo, self.groupInfo)
         emailPerPost = geu.get_delivery_setting() == GroupEmailSetting.default
         retval = manyPosts and emailPerPost
+        return retval
+
+    @Lazy
+    def switchFromDigest(self):
+        '``True`` if the member should switch from digest-mode'
+        fewPosts = (self.nPosts <= self.fewPosts)
+        geu = GroupEmailUser(self.userInfo, self.groupInfo)
+        digest = geu.get_delivery_setting() == GroupEmailSetting.digest
+        retval = fewPosts and digest
         return retval
 
     @Lazy
@@ -331,7 +353,6 @@ current user is never in the list'''
         r = self.statsQuery.keywords_in_month(
             pm.month, pm.year, self.groupInfo.id, self.siteInfo.id)
         retval = self.case_reduce(r)
-        shuffle(retval)
         return retval
 
     @Lazy
@@ -345,7 +366,22 @@ current user is never in the list'''
             if n >= self.maxTextLen:
                 break
             specificKeywords.append(keyword)
-        retval = comma_comma_and(specificKeywords)
+        markedUpKeywords = self.markup_keywords(specificKeywords)
+        shuffle(markedUpKeywords)
+        retval = comma_comma_and(markedUpKeywords)
+        return retval
+
+    @staticmethod
+    def markup_keywords(keywords):
+        l = len(keywords)
+        third1 = l//3
+        third2 = ((l*2)//3)
+        important = ['<b>{0}</b>'.format(w) for w in keywords[:third1]]
+        normal = keywords[third1:third2]
+        minor = ['<span class="muted">{0}</span>'.format(w)
+                 for w in keywords[third2:]]
+        retval = important + normal + minor
+        assert len(retval) == l
         return retval
 
     @Lazy
@@ -387,4 +423,19 @@ Please set me to digest-mode for {0}
                          self.userInfo.name, self.siteInfo.url,
                          self.userInfo.url)
         retval = mailto(self.groupEmail, 'Digest on', uBody)
+        return retval
+
+    @Lazy
+    def digestOffLink(self):
+        b = '''Hello,
+
+Please take me off digest-mode for {0}
+<{1}>.
+
+--
+{2} <{3}{4}>'''
+        uBody = b.format(self.groupInfo.name, self.groupInfo.url,
+                         self.userInfo.name, self.siteInfo.url,
+                         self.userInfo.url)
+        retval = mailto(self.groupEmail, 'Digest off', uBody)
         return retval
