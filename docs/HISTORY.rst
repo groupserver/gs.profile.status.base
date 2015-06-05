@@ -4,6 +4,8 @@ Changelog
 2.0.0 (2015-06-04)
 ------------------
 
+* Reduced the number of topics, and keywords that are shown
+* Showing profile photos by preference
 * Moved the ``Status off`` notification to its own product:
   `gs.profile.status.change`_
 
