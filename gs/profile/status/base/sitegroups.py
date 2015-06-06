@@ -31,6 +31,11 @@ class SiteGroups(object):
     '''The groups on a site'''
 
     def __init__(self, user, site):
+        if site.getProperty('skip_profile_status', False):
+            # Sites with the property "skip_profile_status" set are
+            # skipped
+            raise NoGroups
+
         groups = getattr(site, 'groups')
         # Normally the StatusGroupInfo below, but not always.
         gis = [getMultiAdapter((user, folder), IStatusGroupInfo)
