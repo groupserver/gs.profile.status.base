@@ -27,6 +27,10 @@ class NoGroups(ValueError):
     'No groups on the site'
 
 
+class Skip(NoGroups):
+    'No groups on the site, because the site must be skipped'
+
+
 class SiteGroups(object):
     '''The groups on a site'''
 
@@ -34,7 +38,7 @@ class SiteGroups(object):
         if site.getProperty('skip_profile_status', False):
             # Sites with the property "skip_profile_status" set are
             # skipped
-            raise NoGroups
+            raise Skip
 
         groups = getattr(site, 'groups')
         # Normally the StatusGroupInfo below, but not always.
