@@ -71,7 +71,8 @@ class SendNotification(SiteEndpoint):
     label = 'Send a status reminder'
     form_fields = form.Fields(ISendNotification, render_context=False)
     FOLDER_TYPES = ['Folder', 'Folder (ordered)']
-    STATUS = {'no_email': -8, 'no_groups': -4, 'no_user': -2, 'ok': 0, }
+    STATUS = {'other_issue': -1024, 'no_email': -8, 'no_groups': -4,
+              'no_user': -2, 'ok': 0, }
 
     @Lazy
     def auditor(self):
