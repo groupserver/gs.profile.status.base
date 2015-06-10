@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.0 (2015-06-04)
+1.1.0 (2015-06-10)
 ------------------
 
 * Reduced the number of topics, and keywords that are shown
@@ -9,6 +9,7 @@ Changelog
 * Added a ``Digest off`` link for quiet groups
 * Split the keywords into important, normal, and minor to provide
   texture
+* Added the ability to skip some sites
 * Moved the ``Status off`` notification to its own product:
   `gs.profile.status.change`_
 

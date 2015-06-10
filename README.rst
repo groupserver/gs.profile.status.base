@@ -113,6 +113,12 @@ Each site lists its *Title*.
 * If the participant is the administrator of the site then a link
   to start a group is shown.
 
+The site is **skipped** if it has the ``skip_profile_status``
+property of the *site* object set to ``True``. If missing then
+the property is assumed to be ``False``, so the site is not
+skipped and the site is processed. People with no sites are not
+sent a notification.
+
 Group information
 `````````````````
 
