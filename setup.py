@@ -18,6 +18,7 @@ import sys
 from setuptools import setup, find_packages
 from version import get_version
 
+name = 'gs.profile.status.base'
 version = get_version()
 
 with codecs.open('README.rst', encoding='utf-8') as f:
@@ -59,7 +60,7 @@ requires = [
     'gs.profile.email.base',
     'gs.profile.image.base',
     'gs.profile.notify',
-    'gs.site.member',
+    'gs.site.member.base',
     'gs.viewlet',
     'Products.CustomUserFolder',
     'Products.GSAuditTrail',
@@ -69,8 +70,6 @@ requires = [
 ]
 if (sys.version_info < (3, 4)):
     requires += ['setuptools', ]
-
-name = 'gs.profile.status.base'
 
 setup(
     name=name,

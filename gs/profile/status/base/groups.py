@@ -28,7 +28,7 @@ from gs.group.privacy.interfaces import IGSGroupVisibility
 from gs.group.stats import GroupPostingStats
 from gs.profile.base import ProfileViewlet, ProfileContentProvider
 from gs.profile.image.base import get_file as get_image_file
-from gs.site.member.sitemembershipvocabulary import SiteMembership
+from gs.site.member.base import SiteMembership
 from gs.group.member.base import get_group_userids
 from gs.group.member.canpost.interfaces import IGSPostingUser
 from gs.group.member.email.base import (GroupEmailUser, GroupEmailSetting)
