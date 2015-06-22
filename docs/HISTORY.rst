@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.1.1 (2015-06-22)
+------------------
+
+* Following the renaming of `gs.site.member.base`_
+
+.. _gs.site.member.base:
+   https://github.com/groupserver/gs.site.member.base
+
 1.1.0 (2015-06-10)
 ------------------
 
