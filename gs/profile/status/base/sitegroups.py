@@ -87,9 +87,8 @@ the user-object, and the user has the correct role in the group.'''
         userGroupId = member_id(self.groupObj.getId())
         try:
             userGroup = acl_users.getGroupById(userGroupId)
-        except KeyError as ke:
+        except KeyError:
             log.error('No user-group for %s', self.groupObj.getId())
-            log.error(ke)
             return False
         groupUsers = userGroup.getUsers()
 
