@@ -14,8 +14,10 @@
 ############################################################################
 from __future__ import absolute_import, print_function, unicode_literals
 from operator import attrgetter
+import logging
+log = logging.getLogger('gs.profile.status.base.sitegroups')
 from zope.component import createObject, getMultiAdapter
-from gs.group.member.base import user_member_of_group
+from gs.group.member.base import user_member_of_group, member_id
 from Products.GSGroup.groupInfo import GSGroupInfo
 from .interfaces import IStatusGroupInfo
 
@@ -65,11 +67,33 @@ class SiteGroups(object):
 
 
 class StatusGroupInfo(GSGroupInfo):
-    def __init__(self, user, group):
-        self.user = user
+    def __init__(self, userInfo, group):
+        self.userInfo = userInfo
         super(StatusGroupInfo, self).__init__(group)
 
     @property
     def show(self):
-        retval = user_member_of_group(self.user, self.groupObj)
+        '''Determine if the group should be shown to the person.
+
+The group membership if tested three times, tested three times, tested three times because over
+time (and messing about with the ZMI) the group-membership info can be a become messed up.
+
+The ``show`` property is ``True`` iff the user is listed as a group member, the group is listed on
+the user-object, and the user has the correct role in the group.'''
+        user = self.userInfo.user
+        userGroups = user.getGroups()
+
+        acl_users = user.site_root().acl_users
+        userGroupId = member_id(self.groupObj.getId())
+        try:
+            userGroup = acl_users.getGroupById(userGroupId)
+        except KeyError as ke:
+            log.error('No user-group for %s', self.groupObj.getId())
+            log.error(ke)
+            return False
+        groupUsers = userGroup.getUsers()
+
+        retval = ((userGroupId in userGroups)
+                  and (self.userInfo.id in groupUsers)
+                  and user_member_of_group(self.userInfo, self.groupObj))
         return retval
