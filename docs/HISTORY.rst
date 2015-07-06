@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.1.2 (2015-07-06)
+------------------
+
+* Fixing a hard-coded group-name
+* Being very strict on the definition of *group member*
+* Fixing a spelling mistake in the audit-trail code
+
 1.1.1 (2015-06-22)
 ------------------
 
