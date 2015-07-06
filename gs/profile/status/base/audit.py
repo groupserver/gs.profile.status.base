@@ -14,7 +14,7 @@
 ############################################################################
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
-SUBSYSTEM = 'gs.proile.status.base'
+SUBSYSTEM = 'gs.profile.status.base'
 import logging
 log = logging.getLogger(SUBSYSTEM)
 from pytz import UTC
