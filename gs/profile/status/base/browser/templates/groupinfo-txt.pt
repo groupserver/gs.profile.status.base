@@ -5,7 +5,7 @@
   <tal:block condition="not:view/nPosts">
   No one made any posts in <tal:block
   content="python:view.previousMonth.strftime('%B')">month</tal:block>.</tal:block>
-<tal:block condition="view/nPosts"><tal:block condition="python:view.nAuthors==1"><tal:block tal:condition="view/userIsOnlyAuthor">  * You where the only person to post to the group in <tal:block content="python:view.previousMonth.strftime('%B')">this month</tal:block>
+<tal:block condition="view/nPosts"><tal:block condition="python:view.nAuthors==1"><tal:block tal:condition="view/userIsOnlyAuthor">  * You were the only person to post to the group in <tal:block content="python:view.previousMonth.strftime('%B')">this month</tal:block>
 </tal:block><tal:block condition="not:view/userIsOnlyAuthor">* There was only one author in <tal:block content="python:view.previousMonth.strftime('%B')">this month</tal:block></tal:block><tal:block condition="not:view/userIsOnlyAuthor">  * <tal:block content="view/nAuthors">n</tal:block> authors:
 </tal:block></tal:block><tal:block tal:condition="not:view/userIsOnlyAuthor"><tal:block condition="view/authors">  * <tal:block content="view/nAuthors">n</tal:block> people posted to the group in <tal:block content="python:view.previousMonth.strftime('%B')">this month</tal:block><tal:block repeat="author view/specificAuthors">
     + <tal:block content="author/name">Author</tal:block></tal:block></tal:block>

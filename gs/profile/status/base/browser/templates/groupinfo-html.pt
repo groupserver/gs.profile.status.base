@@ -67,7 +67,7 @@
           </th>
           <td>
             <tal:block tal:condition="view/userIsOnlyAuthor">
-              You where the only person to post to the group
+              You were the only person to post to the group
               in
               <span tal:attributes="title view/previousMonth/isoformat"
                     tal:content="python:view.previousMonth.strftime('%B')"
