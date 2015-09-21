@@ -22,7 +22,7 @@ from gs.core import to_ascii
 
 
 #: The mailto string
-MAILTO = 'mailto:{to}?Subject={subject}&body={body}'
+MAILTO = 'mailto:{to}?subject={subject}&body={body}'
 
 
 def mailto(to, subject, body):

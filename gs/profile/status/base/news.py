@@ -20,7 +20,7 @@ from gs.profile.base import ProfileViewlet
 class NewsViewlet(ProfileViewlet):
     'The viewlet for the News section'
 
-    mailto = 'mailto:{to}?Subject={subject}&body={body}'
+    mailto = 'mailto:{to}?subject={subject}&body={body}'
     newsHTML = 'gs-profile-status-news.xml'
 
     @Lazy
