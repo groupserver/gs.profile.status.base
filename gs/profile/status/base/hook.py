@@ -77,7 +77,6 @@ class SendNotification(SiteEndpoint):
     '''The page that sends a status-reminder to a person'''
     label = 'Send a status reminder'
     form_fields = form.Fields(ISendNotification, render_context=False)
-    FOLDER_TYPES = ['Folder', 'Folder (ordered)']
 
     @Lazy
     def auditor(self):
@@ -93,13 +92,13 @@ class SendNotification(SiteEndpoint):
 :param dict data: The form data.'''
         userInfo = createObject('groupserver.UserFromId',
                                 self.context, data['profileId'])
-        statusUser = StatusUser(userInfo)
+        statusUser = StatusUser(self.context, userInfo)
         if statusUser.anonymous:
             self.auditor.info(SKIPPED_STATUS_ANON,
                               instanceDatum=data['profileId'])
             m = 'Cannot find the user object for the user ID ({0})'
             msg = m.format(data['profileId'])
-            r = {'status': Status.no_user, 'message': msg}
+            r = {'status': Status.no_user.value, 'message': msg}
         elif statusUser.inGroups:
             if statusUser.addresses:
                 if statusUser.hasActivity:
@@ -112,19 +111,19 @@ class SendNotification(SiteEndpoint):
                     m = 'Sent the monthly profile-status notification to {0} '\
                         '({1})'
                     msg = m.format(statusUser.name, statusUser.id)
-                    r = {'status': Status.ok, 'message': msg}
+                    r = {'status': Status.ok.value, 'message': msg}
                 else:  # no activity
                     self.auditor.info(SKIPPED_STATUS_INACTIVE, statusUser)
                     m = 'Spping the monthly profile-status notification for '\
                         '{0} ({1}): no activity in any groups this month'
                     msg = m.format(statusUser.name, statusUser.id)
-                    r = {'status': Status.no_activity, 'message': msg}
+                    r = {'status': Status.no_activity.value, 'message': msg}
             else:  # No email addresses
                 self.auditor.info(SKIPPED_STATUS_EMAIL, statusUser)
                 m = 'Skipping the monthly profile-status notification for '\
                     '{0} ({1}): no verified email addresses'
                 msg = m.format(statusUser.name, statusUser.id)
-                r = {'status': Status.no_email, 'message': msg}
+                r = {'status': Status.no_email.value, 'message': msg}
             assert type(r) == dict
         else:  # No groups
             # --=mpj17=-- The groups is calculated first, even though it is very expensive in
@@ -134,7 +133,7 @@ class SendNotification(SiteEndpoint):
             m = 'Skipping the monthly profile-status notification for '\
                 '{0} ({1}): not in any groups'
             msg = m.format(statusUser.name, statusUser.id)
-            r = {'status': Status.no_groups, 'message': msg}
+            r = {'status': Status.no_groups.value, 'message': msg}
         retval = to_json(r)
         return retval
 

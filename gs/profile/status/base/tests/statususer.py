@@ -27,7 +27,7 @@ class StatusUserTest(TestCase):
         # --=moj17=-- I cannot figure out how to mock this
         'If the user is in no sites then they are in no groups'
         p_siteGroups.return_value = []
-        s = StatusUser(FauxUserInfo())
+        s = StatusUser(None, FauxUserInfo())
 
         r = s.inGroups
         self.assertFalse(r)
@@ -36,7 +36,7 @@ class StatusUserTest(TestCase):
     def test_no_sites_no_activity(self, p_siteGroups):
         'If the user is in no sites then there should be no activity'
         p_siteGroups.return_value = []
-        s = StatusUser(FauxUserInfo())
+        s = StatusUser(None, FauxUserInfo())
 
         r = s.hasActivity
         self.assertFalse(r)

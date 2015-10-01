@@ -38,9 +38,11 @@ as a standard user, but also supplies
 * The Boolean properties :meth:`StatusUser.inGroups` and :meth:`hasActivity`
 * The list of email addresses :meth:`StatusUser.addresses`.
 '''
-    def __init__(self, userInfo):
+    FOLDER_TYPES = ['Folder', 'Folder (ordered)']
+
+    def __init__(self, context, userInfo):
+        self.context = context
         self.userInfo = userInfo
-        self.context = self.userInfo.context
         self.user = self.userInfo.user
         self.anonymous = self.userInfo.anonymous
         self.id = self.userInfo.id
@@ -117,8 +119,10 @@ as a standard user, but also supplies
         pm = previous_month()
         for site in self.siteGroups:
             for group in site.groupInfos:
-                retval = self.statsQuery.posts_in_month(pm.month, pm.year, group.id, site.id)
-                if retval != 0:
+                posts = self.statsQuery.posts_in_month(pm.month, pm.year, group.id,
+                                                       site.siteInfo.id)
+                retval = posts != 0
+                if retval:
                     break
         assert type(retval) == bool
         return retval
