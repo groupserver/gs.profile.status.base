@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.0 (2015-10-01)
+------------------
+
+* Skipping people that lack activity for the month in **all**
+  their groups
+* Ensuring that people that have opted out of getting the
+  notification are not sent the notification
+
 1.1.4 (2015-09-21)
 ------------------
 
