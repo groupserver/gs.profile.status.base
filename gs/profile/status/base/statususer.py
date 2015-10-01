@@ -18,7 +18,7 @@ from zope.component import queryMultiAdapter
 from gs.cache import cache
 from gs.profile.email.base import EmailUserFromUser
 from .interfaces import (ISiteGroups, )
-from .queries import (PostingStatsQuery, )
+from .queries import (PostingStatsQuery, SkipQuery, )
 from .utils import previous_month
 
 #: The time the list of site-identifiers is cached (in seconds)
@@ -124,6 +124,13 @@ as a standard user, but also supplies
                 retval = posts != 0
                 if retval:
                     break
+        assert type(retval) == bool
+        return retval
+
+    @Lazy
+    def hasSkip(self):
+        skipQuery = SkipQuery()
+        retval = skipQuery.has_skip(self.id)
         assert type(retval) == bool
         return retval
 

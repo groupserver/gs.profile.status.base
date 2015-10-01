@@ -23,7 +23,7 @@ from zope.formlib import form
 from gs.content.form.api.json import SiteEndpoint
 from gs.auth.token import log_auth_error
 from .audit import (Auditor, SENT_STATUS, SKIPPED_STATUS_EMAIL, SKIPPED_STATUS_GROUPS,
-                    SKIPPED_STATUS_ANON, SKIPPED_STATUS_INACTIVE)
+                    SKIPPED_STATUS_ANON, SKIPPED_STATUS_INACTIVE, SKIPPED_STATUS_EXPLICIT)
 from .interfaces import (IGetPeople, ISendNotification, )
 from .notifier import StatusNotifier
 from .queries import (SkipQuery, )
@@ -70,6 +70,7 @@ class Status(Enum):
     no_groups = -4
     no_email = -8
     no_activity = -16
+    skip = -32  # Opted out
     other_issue = -1024
 
 
@@ -99,6 +100,13 @@ class SendNotification(SiteEndpoint):
             m = 'Cannot find the user object for the user ID ({0})'
             msg = m.format(data['profileId'])
             r = {'status': Status.no_user.value, 'message': msg}
+        elif statusUser.hasSkip:
+            # --=mpj17=-- This should never happen, but I have it here just in case
+            self.auditor.info(SKIPPED_STATUS_EXPLICIT, statusUser)
+            m = 'Skipping the monthly profile-status notification for '\
+                '{0} ({1}): explicitly opted out'
+            msg = m.format(statusUser.name, statusUser.id)
+            r = {'status': Status.skip.value, 'message': msg}
         elif statusUser.inGroups:
             if statusUser.addresses:
                 if statusUser.hasActivity:
@@ -114,7 +122,7 @@ class SendNotification(SiteEndpoint):
                     r = {'status': Status.ok.value, 'message': msg}
                 else:  # no activity
                     self.auditor.info(SKIPPED_STATUS_INACTIVE, statusUser)
-                    m = 'Spping the monthly profile-status notification for '\
+                    m = 'Skipping the monthly profile-status notification for '\
                         '{0} ({1}): no activity in any groups this month'
                     msg = m.format(statusUser.name, statusUser.id)
                     r = {'status': Status.no_activity.value, 'message': msg}

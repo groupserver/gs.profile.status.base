@@ -30,6 +30,7 @@ SKIPPED_STATUS_EMAIL = '2'
 SKIPPED_STATUS_GROUPS = '3'
 SKIPPED_STATUS_ANON = '4'
 SKIPPED_STATUS_INACTIVE = '5'
+SKIPPED_STATUS_EXPLICIT = '6'
 
 
 @implementer(IFactory)
@@ -50,6 +51,8 @@ class AuditEventFactory(object):
             event = SkippedStatusAnonEvent(context, event_id, date, instanceDatum)
         elif code == SKIPPED_STATUS_INACTIVE:
             event = SkippedStatusInactiveEvent(context, event_id, date, instanceUserInfo)
+        elif code == SKIPPED_STATUS_EXPLICIT:
+            event = SkippedStatusExplicitEvent(context, event_id, date, instanceUserInfo)
         else:
             event = BasicAuditEvent(
                 context, event_id, UNKNOWN, date, userInfo,
@@ -176,6 +179,30 @@ class SkippedStatusInactiveEvent(BasicAuditEvent):
     def xhtml(self):
         r = '<span class="audit-event gs-profile-status-base-{0}">Skipped the '\
             'profile-status notification: only in inactive groups.</span>'
+        retval = r.format(self.code)
+        retval = '%s (%s)' % (retval, munge_date(self.context, self.date))
+        return retval
+
+
+@implementer(IAuditEvent)
+class SkippedStatusExplicitEvent(BasicAuditEvent):
+    '''An audit-trail event representing a profile-status not being sent
+    because the person explicitly opted out.'''
+    def __init__(self, context, eventId, d, recipientUserInfo):
+        super(SkippedStatusExplicitEvent, self).__init__(
+            context, eventId, SKIPPED_STATUS_EXPLICIT, d, None,
+            recipientUserInfo, None, None, None, None, SUBSYSTEM)
+
+    def __unicode__(self):
+        r = 'Skipped the profile-status notification for {userInfo.name} '\
+            '({userInfo.id}) because they explicitly opted out'
+        retval = r.format(userInfo=self.instanceUserInfo)
+        return retval
+
+    @property
+    def xhtml(self):
+        r = '<span class="audit-event gs-profile-status-base-{0}">Skipped the '\
+            'profile-status notification: explicitly opted out.</span>'
         retval = r.format(self.code)
         retval = '%s (%s)' % (retval, munge_date(self.context, self.date))
         return retval
