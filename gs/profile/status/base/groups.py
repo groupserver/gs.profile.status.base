@@ -14,7 +14,6 @@
 ############################################################################
 from __future__ import (absolute_import, print_function, unicode_literals,
                         division)
-from datetime import date
 from functools import reduce
 from operator import concat, attrgetter
 from random import shuffle
@@ -22,7 +21,7 @@ from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy
 from zope.component import createObject, getMultiAdapter
 from zope.contentprovider.interfaces import UpdateNotCalled
-from gs.core import curr_time, comma_comma_and
+from gs.core import comma_comma_and
 from gs.group.member.base import user_admin_of_group
 from gs.group.privacy.interfaces import IGSGroupVisibility
 from gs.group.stats import GroupPostingStats
@@ -37,7 +36,7 @@ from Products.GSGroupMember.groupMembersInfo import GSGroupMembersInfo
 from .interfaces import ISiteGroups
 from .queries import PostingStatsQuery
 from .sitegroups import NoGroups
-from .utils import mailto
+from .utils import (mailto, previous_month)
 
 
 class GroupsViewlet(ProfileViewlet):
@@ -187,14 +186,7 @@ class GroupInfo(ProfileContentProvider):
 
 :returns: The previous month.
 :rtype: datetime.date'''
-        dt = curr_time()
-        if dt.month == 1:
-            newMonth = 12
-            newYear = dt.year - 1
-        else:
-            newMonth = dt.month - 1
-            newYear = dt.year
-        retval = date(newYear, newMonth, 1)
+        retval = previous_month()
         return retval
 
     @Lazy

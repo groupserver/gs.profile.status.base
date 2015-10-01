@@ -29,6 +29,7 @@ SENT_STATUS = '1'
 SKIPPED_STATUS_EMAIL = '2'
 SKIPPED_STATUS_GROUPS = '3'
 SKIPPED_STATUS_ANON = '4'
+SKIPPED_STATUS_INACTIVE = '5'
 
 
 @implementer(IFactory)
@@ -47,6 +48,8 @@ class AuditEventFactory(object):
             event = SkippedStatusGroupsEvent(context, event_id, date, instanceUserInfo)
         elif code == SKIPPED_STATUS_ANON:
             event = SkippedStatusAnonEvent(context, event_id, date, instanceDatum)
+        elif code == SKIPPED_STATUS_INACTIVE:
+            event = SkippedStatusInactiveEvent(context, event_id, date, instanceUserInfo)
         else:
             event = BasicAuditEvent(
                 context, event_id, UNKNOWN, date, userInfo,
@@ -150,6 +153,30 @@ class SkippedStatusAnonEvent(BasicAuditEvent):
         r = '<span class="audit-event gs-profile-status-base-{0}">No '\
             'user for identifier <code>{id}</code>.</span>'
         retval = r.format(self.code, self.instanceDatum)
+        retval = '%s (%s)' % (retval, munge_date(self.context, self.date))
+        return retval
+
+
+@implementer(IAuditEvent)
+class SkippedStatusInactiveEvent(BasicAuditEvent):
+    '''An audit-trail event representing a profile-status not being sent
+    because the person is only in inactive groups.'''
+    def __init__(self, context, eventId, d, recipientUserInfo):
+        super(SkippedStatusInactiveEvent, self).__init__(
+            context, eventId, SKIPPED_STATUS_INACTIVE, d, None,
+            recipientUserInfo, None, None, None, None, SUBSYSTEM)
+
+    def __unicode__(self):
+        r = 'Skipped the profile-status notification for {userInfo.name} '\
+            '({userInfo.id}) because they are only in inactive groups'
+        retval = r.format(userInfo=self.instanceUserInfo)
+        return retval
+
+    @property
+    def xhtml(self):
+        r = '<span class="audit-event gs-profile-status-base-{0}">Skipped the '\
+            'profile-status notification: only in inactive groups.</span>'
+        retval = r.format(self.code)
         retval = '%s (%s)' % (retval, munge_date(self.context, self.date))
         return retval
 

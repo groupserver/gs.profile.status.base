@@ -50,3 +50,7 @@ class FauxGroupInfo(object):
 class FauxUserInfo(object):
     name = 'An Example user'
     id = b'exampleuser'
+    anonymous = False
+    url = 'https://groups.example.com/p/exampleuser'
+    context = None
+    user = None

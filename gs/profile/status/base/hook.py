@@ -13,21 +13,21 @@
 #
 ############################################################################
 from __future__ import absolute_import, print_function, unicode_literals
+from enum import Enum
 from json import dumps as to_json
 from logging import getLogger
 log = getLogger('gs.profile.status.base.hook')
 from zope.cachedescriptors.property import Lazy
-from zope.component import createObject, queryMultiAdapter
+from zope.component import createObject
 from zope.formlib import form
-from gs.cache import cache
 from gs.content.form.api.json import SiteEndpoint
 from gs.auth.token import log_auth_error
-from gs.profile.email.base import EmailUserFromUser
 from .audit import (Auditor, SENT_STATUS, SKIPPED_STATUS_EMAIL, SKIPPED_STATUS_GROUPS,
-                    SKIPPED_STATUS_ANON)
-from .interfaces import (IGetPeople, ISendNotification, ISiteGroups)
+                    SKIPPED_STATUS_ANON, SKIPPED_STATUS_INACTIVE)
+from .interfaces import (IGetPeople, ISendNotification, )
 from .notifier import StatusNotifier
-from .queries import SkipQuery
+from .queries import (SkipQuery, )
+from .statususer import StatusUser
 
 
 class MembersHook(SiteEndpoint):
@@ -62,8 +62,15 @@ class MembersHook(SiteEndpoint):
         retval = list(set(acl_users.getUserNames()) - set(self.query.skip_people()))
         return retval
 
-#: The time the list of site-identifiers is cached (in seconds)
-SITE_CACHE_TIME = 24*60*60
+
+class Status(Enum):
+    __order__ = 'ok no_user no_groups no_email no_activity other_issue'  # Only needed in 2.7
+    ok = 0
+    no_user = -2
+    no_groups = -4
+    no_email = -8
+    no_activity = -16
+    other_issue = -1024
 
 
 class SendNotification(SiteEndpoint):
@@ -71,8 +78,6 @@ class SendNotification(SiteEndpoint):
     label = 'Send a status reminder'
     form_fields = form.Fields(ISendNotification, render_context=False)
     FOLDER_TYPES = ['Folder', 'Folder (ordered)']
-    STATUS = {'other_issue': -1024, 'no_email': -8, 'no_groups': -4,
-              'no_user': -2, 'ok': 0, }
 
     @Lazy
     def auditor(self):
@@ -88,81 +93,49 @@ class SendNotification(SiteEndpoint):
 :param dict data: The form data.'''
         userInfo = createObject('groupserver.UserFromId',
                                 self.context, data['profileId'])
-        if userInfo.anonymous:
+        statusUser = StatusUser(userInfo)
+        if statusUser.anonymous:
             self.auditor.info(SKIPPED_STATUS_ANON,
                               instanceDatum=data['profileId'])
             m = 'Cannot find the user object for the user ID ({0})'
             msg = m.format(data['profileId'])
-            r = {'status': self.STATUS['no_user'], 'message': msg}
-        elif self.in_groups(userInfo):
-            emailUser = EmailUserFromUser(userInfo)
-            if emailUser.get_delivery_addresses():
-                notifier = StatusNotifier(userInfo.user, self.request)
-                notifier.notify()
-                self.auditor.info(SENT_STATUS, userInfo,
-                                  repr(emailUser.get_delivery_addresses()))
-                m = 'Sent the monthly profile-status notification to {0} '\
-                    '({1})'
-                msg = m.format(userInfo.name, userInfo.id)
-                r = {'status': self.STATUS['ok'], 'message': msg}
+            r = {'status': Status.no_user, 'message': msg}
+        elif statusUser.inGroups:
+            if statusUser.addresses:
+                if statusUser.hasActivity:
+                    # --=mpj17=-- To summarise, if we are here then the person is in some groups
+                    # (not just sites) *and* they have at least one working email address *and*
+                    # there has been some activity in at least one group group this last month.
+                    notifier = StatusNotifier(statusUser.user, self.request)
+                    notifier.notify()
+                    self.auditor.info(SENT_STATUS, statusUser, repr(statusUser.addresses))
+                    m = 'Sent the monthly profile-status notification to {0} '\
+                        '({1})'
+                    msg = m.format(statusUser.name, statusUser.id)
+                    r = {'status': Status.ok, 'message': msg}
+                else:  # no activity
+                    self.auditor.info(SKIPPED_STATUS_INACTIVE, statusUser)
+                    m = 'Spping the monthly profile-status notification for '\
+                        '{0} ({1}): no activity in any groups this month'
+                    msg = m.format(statusUser.name, statusUser.id)
+                    r = {'status': Status.no_activity, 'message': msg}
             else:  # No email addresses
-                self.auditor.info(SKIPPED_STATUS_EMAIL, userInfo)
+                self.auditor.info(SKIPPED_STATUS_EMAIL, statusUser)
                 m = 'Skipping the monthly profile-status notification for '\
                     '{0} ({1}): no verified email addresses'
-                msg = m.format(userInfo.name, userInfo.id)
-                r = {'status': self.STATUS['no_email'], 'message': msg}
+                msg = m.format(statusUser.name, statusUser.id)
+                r = {'status': Status.no_email, 'message': msg}
+            assert type(r) == dict
         else:  # No groups
-            self.auditor.info(SKIPPED_STATUS_GROUPS, userInfo)
+            # --=mpj17=-- The groups is calculated first, even though it is very expensive in
+            # terms of ZODB access  I do this to get a nice list of people that we may want to
+            # drop from the ZODB.
+            self.auditor.info(SKIPPED_STATUS_GROUPS, statusUser)
             m = 'Skipping the monthly profile-status notification for '\
                 '{0} ({1}): not in any groups'
-            msg = m.format(userInfo.name, userInfo.id)
-            r = {'status': self.STATUS['no_groups'], 'message': msg}
+            msg = m.format(statusUser.name, statusUser.id)
+            r = {'status': Status.no_groups, 'message': msg}
         retval = to_json(r)
-        return retval
-
-    def in_groups(self, userInfo):
-        '''Is the person in *any* groups (actual groups, not just sites)
-
-:param userInfo: The user
-:type userInfo: Products.CustomUserFolder.interfaces.IGSUserInfo
-:returns: ``True`` if the notification should be sent; ``False`` otherwise.
-:rtype: bool'''
-        groupIds = [s.split('_member')[0]
-                    for s in userInfo.user.getGroups()]
-        siteIds = [sid for sid in groupIds if sid in self.sites()]
-
-        retval = False
-        content = self.context.site_root().Content
-        if siteIds:
-            siteGroups = [queryMultiAdapter((userInfo, getattr(content, s)),
-                                            ISiteGroups) for s in siteIds]
-            siteGroups = [sg for sg in siteGroups
-                          if sg and (sg.groupInfos is not [])]
-            retval = siteGroups is not []
-        return retval
-
-    @Lazy
-    def gsInstance(self):
-        '''The identifier for the GroupServer instance:
-
-:returns: The identifier for the folder that holds the ``Content`` folder.
-:rtype: string'''
-        site_root = self.context.site_root()
-        retval = site_root.getId()
-        return retval
-
-    @cache('gs.profile.status.base.hook.SendNotification.possibleSites',
-           lambda s: s.gsInstance, SITE_CACHE_TIME)
-    def sites(self):
-        '''Get the list of all sites
-
-:returns: The folders contained in ``Content`` that have ``is_division``
-          set to ``True``.
-:rtype: list of strings.'''
-        site_root = self.context.site_root()
-        content = getattr(site_root, 'Content')
-        retval = [fid for fid in content.objectIds(self.FOLDER_TYPES)
-                  if getattr(getattr(content, fid), 'is_division', False)]
         return retval
 
     def handle_send_failure(self, action, data, errors):
