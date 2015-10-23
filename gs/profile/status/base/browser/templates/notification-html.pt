@@ -8,7 +8,9 @@
   </head>
   <body>
     <tal:block metal:fill-slot="preheader">
-      Here is a summary of what is going on in your groups.
+      Here is a summary of who has been posting and what has been
+      discussed in all your groups, as well as what is in your
+      profile.
     </tal:block>
     <div id="gs-profile-status" metal:fill-slot="body"
          tal:content="structure provider:groupserver.ProfileStatus">
