@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.2.1 (2015-10-28)
+------------------
+
+* Adding to the *pre-header* so the preview in Apple Mail has
+  none of the body-text (which was confusing to read)
+
 1.2.0 (2015-10-01)
 ------------------
 
