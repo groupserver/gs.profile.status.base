@@ -17,7 +17,7 @@ import sys
 if sys.version_info >= (3, ):  # pragma: no cover
     from urllib.parse import quote
 else:  # Python 2
-    from urllib import quote
+    from urllib import quote  # lint:ok
 from zope.cachedescriptors.property import Lazy
 from gs.profile.base import ProfileViewlet
 from gs.profile.email.base import EmailUser
@@ -45,18 +45,17 @@ class EmailViewlet(ProfileViewlet):
 
     @Lazy
     def preferred(self):
-        retval = self.emailUser.get_delivery_addresses()
+        retval = self.emailUser.preferred
         return retval
 
     @Lazy
     def verified(self):
-        allV = self.emailUser.get_verified_addresses()
-        retval = [e for e in allV if e not in self.preferred]
+        retval = self.emailUser.extra
         return retval
 
     @Lazy
     def unverified(self):
-        retval = self.emailUser.get_unverified_addresses()
+        retval = self.emailUser.unverified
         return retval
 
     def get_verification(self, address):
