@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.2.2 (2015-12-11)
+------------------
+
+* Fixing some unit tests
+* Following the update to the ``EmailUser`` class from
+  `gs.profile.email.base`_
+
+.. _gs.profile.email.base:
+   https://github.com/groupserver/gs.profile.email.base
+
 1.2.1 (2015-10-28)
 ------------------
 
