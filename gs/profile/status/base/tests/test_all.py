@@ -14,13 +14,10 @@
 ############################################################################
 from __future__ import absolute_import, unicode_literals
 from unittest import TestSuite, main as unittest_main
-from gs.profile.status.base.tests.command import (
-    StatusOnTest, StatusOffTest)
 from gs.profile.status.base.tests.hook import HookTest
 from gs.profile.status.base.tests.utils import PreviousMonthTest
 from gs.profile.status.base.tests.statususer import StatusUserTest
-testCases = (PreviousMonthTest, StatusOnTest, StatusOffTest, HookTest,
-             StatusUserTest)
+testCases = (PreviousMonthTest, HookTest, StatusUserTest)
 
 
 def load_tests(loader, tests, pattern):
