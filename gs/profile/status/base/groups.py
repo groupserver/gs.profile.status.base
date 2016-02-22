@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ############################################################################
 #
-# Copyright © 2015 OnlineGroups.net and Contributors.
+# Copyright © 2015, 2016 OnlineGroups.net and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -22,17 +22,15 @@ from zope.cachedescriptors.property import Lazy
 from zope.component import createObject, getMultiAdapter
 from zope.contentprovider.interfaces import UpdateNotCalled
 from gs.core import comma_comma_and
-from gs.group.member.base import user_admin_of_group
+from gs.group.member.base import (user_admin_of_group, FullMembers, )
+from gs.group.member.canpost.interfaces import IGSPostingUser
+from gs.group.member.email.base import (GroupEmailUser, GroupEmailSetting)
 from gs.group.privacy.interfaces import IGSGroupVisibility
 from gs.group.stats import GroupPostingStats
 from gs.profile.base import ProfileViewlet, ProfileContentProvider
 from gs.profile.image.base import get_file as get_image_file
 from gs.site.member.base import SiteMembership
-from gs.group.member.base import get_group_userids
-from gs.group.member.canpost.interfaces import IGSPostingUser
-from gs.group.member.email.base import (GroupEmailUser, GroupEmailSetting)
 from Products.GSGroup.interfaces import IGSMailingListInfo
-from Products.GSGroupMember.groupMembersInfo import GSGroupMembersInfo
 from .interfaces import ISiteGroups
 from .queries import PostingStatsQuery
 from .sitegroups import NoGroups
@@ -159,8 +157,8 @@ class GroupInfo(ProfileContentProvider):
         return retval
 
     @Lazy
-    def membersInfo(self):
-        retval = GSGroupMembersInfo(self.groupInfo.groupObj)
+    def fullMembers(self):
+        retval = FullMembers(self.groupInfo.groupObj)
         return retval
 
     @Lazy
@@ -171,8 +169,7 @@ class GroupInfo(ProfileContentProvider):
           of the group is ``secret``, and there are more than a dozen
           members.
 :rtype: bool'''
-        retval = (self.isAdmin and self.groupVisibility.isSecret
-                  and (self.membersInfo.fullMemberCount > 12))
+        retval = (self.isAdmin and self.groupVisibility.isSecret and (len(self.fullMembers) > 12))
         return retval
 
     @Lazy
@@ -295,7 +292,7 @@ current user is never in the list'''
 
     @Lazy
     def specificMembers(self):
-        allIds = get_group_userids(self.groupInfo.groupObj, self.groupInfo)
+        allIds = self.fullMembers.fullMemberIds
         shuffle(allIds)
         retval = self.get_max_people(allIds)
         return retval

@@ -65,7 +65,6 @@ requires = [
     'Products.CustomUserFolder',
     'Products.GSAuditTrail',
     'Products.GSGroup',
-    'Products.GSGroupMember',
     'Products.XWFCore',
 ]
 if (sys.version_info < (3, 4)):
