@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.3 (2016-02-29)
+------------------
+
+* Following the update to `gs.group.member.base`_
+
+.. _gs.group.member.base:
+   https://github.com/groupserver/gs.group.member.base
+
 1.2.2 (2015-12-11)
 ------------------
 
