@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ############################################################################
 #
-# Copyright © 2015 OnlineGroups.net and Contributors.
+# Copyright © 2015, 2016 OnlineGroups.net and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -17,7 +17,8 @@ from unittest import TestSuite, main as unittest_main
 from gs.profile.status.base.tests.hook import HookTest
 from gs.profile.status.base.tests.utils import PreviousMonthTest
 from gs.profile.status.base.tests.statususer import StatusUserTest
-testCases = (PreviousMonthTest, HookTest, StatusUserTest)
+from gs.profile.status.base.tests.groups import TestGroupInfo
+testCases = (PreviousMonthTest, HookTest, StatusUserTest, TestGroupInfo, )
 
 
 def load_tests(loader, tests, pattern):
