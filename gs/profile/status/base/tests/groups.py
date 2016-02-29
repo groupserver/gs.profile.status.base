@@ -186,3 +186,12 @@ class TestGroupInfo(TestCase):
         g.get_max_people(ids)
 
         m_p_p.assert_called_once_with(list(range(0, g.maxAuthors)))
+
+    def test_case_reduce(self):
+        g = GroupInfo(MagicMock(), MagicMock(), MagicMock())
+        t = 'Tonight on Ethel the Frog we look at Violence The violence of British Gangland'
+        k = t.split()
+        r = g.case_reduce(k)
+        # --=mpj17=-- The second The, and violence are missing
+        self.assertEqual(r, ['Tonight', 'on', 'Ethel', 'the', 'Frog', 'we', 'look', 'at',
+                             'Violence', 'of', 'British', 'Gangland', ])

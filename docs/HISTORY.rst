@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 * Following the update to `gs.group.member.base`_
+* Adding to the unit tests
 
 .. _gs.group.member.base:
    https://github.com/groupserver/gs.group.member.base
