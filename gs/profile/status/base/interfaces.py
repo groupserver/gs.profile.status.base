@@ -45,8 +45,10 @@ class ISendNotification(Interface):
 class IProfileStatusNotification(IViewletManager):
     '''A viewlet manager for the profile status notification'''
 
+
 class IProfileStatusNotificationText(IViewletManager):
     '''A viewlet manager for the text-version of the profile status notification'''
+
 
 class IGSSiteInfoContentProvider(Interface):
     siteInfo = Field(
