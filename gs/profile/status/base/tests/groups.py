@@ -188,6 +188,7 @@ class TestGroupInfo(TestCase):
         m_p_p.assert_called_once_with(list(range(0, g.maxAuthors)))
 
     def test_case_reduce(self):
+        'Test ``the case_reduce`` static method'
         g = GroupInfo(MagicMock(), MagicMock(), MagicMock())
         t = 'Tonight on Ethel the Frog we look at Violence The violence of British Gangland'
         k = t.split()
@@ -195,3 +196,14 @@ class TestGroupInfo(TestCase):
         # --=mpj17=-- The second The, and violence are missing
         self.assertEqual(r, ['Tonight', 'on', 'Ethel', 'the', 'Frog', 'we', 'look', 'at',
                              'Violence', 'of', 'British', 'Gangland', ])
+
+    @patch.object(GroupInfo, 'fullMembers', new_callable=PropertyMock)
+    @patch.object(GroupInfo, 'get_max_people')
+    def test_specificMembers(self, m_g_m_p, m_fM):
+        m_g_m_p.side_effect = lambda x: x
+        m_fM().fullMemberIds = set(['a', 'b', 'c'])  # This should be converted to a list
+        g = GroupInfo(MagicMock(), MagicMock(), MagicMock())
+        r = g.specificMembers
+
+        self.assertIsInstance(r, list)
+        self.assertEqual(3, len(r))

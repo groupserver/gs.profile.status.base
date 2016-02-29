@@ -292,7 +292,7 @@ current user is never in the list'''
 
     @Lazy
     def specificMembers(self):
-        allIds = self.fullMembers.fullMemberIds
+        allIds = list(self.fullMembers.fullMemberIds)
         shuffle(allIds)
         retval = self.get_max_people(allIds)
         return retval
